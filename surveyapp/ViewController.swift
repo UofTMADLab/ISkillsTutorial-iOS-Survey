@@ -15,10 +15,5 @@ class ViewController: UIViewController {
     }
 
 
-    @IBAction func startSurvey() {
-        let vc = storyboard?.instantiateViewController(identifier: "question") as! QuestionViewController
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
-    }
 }
 
