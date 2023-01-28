@@ -32,14 +32,14 @@ let question3 = Question(text: "Would you recommend this workshop to others?", a
     "No"
 ])
 
+/* Store all questions in array allQuestions*/
 let allQuestions = [question1, question2, question3]
 
 
 class QuestionViewController: UITableViewController {
 
 
-    
-    var currentQuestionIndex = 0
+    var currentQuestionIndex = 0 // keeps track of index of current question
     var localAnswers = [String]() // stores the answers locally before sending to remote database
 
     /* Uploads the survey answers onto the remote server. */
@@ -76,23 +76,28 @@ class QuestionViewController: UITableViewController {
     }
     
     // tableview functions
+    
+    /* Returns number of sections in the table view. First for the question text, secoond for the answer cells.
+     A required method under UITableViewDataSource protocol.
+     */
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
     
+    /* Returns the number of rows or cells in each section. Allows us to specify same or different number of rows for different sections.*/
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return 1
+            return 1 // one row/cell for the question text
         } else {
             let currentQuestion = allQuestions[currentQuestionIndex]
-            return currentQuestion.answers.count
+            return currentQuestion.answers.count // number of rows/cells = number of possible answers for each question
         }
 
     }
     
-    
+    /* Creates and configure rows. Updates the question text in the first section, and text displayed on the answer cells accordingly. */
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath )
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath ) // retrieves a reusable cell object for the text updates
         let currentQuestion = allQuestions[currentQuestionIndex]
         let section = indexPath.section
         let answerIndex = indexPath.row
@@ -110,6 +115,7 @@ class QuestionViewController: UITableViewController {
         return cell
     }
     
+    /* Informs the view controller that an answer has been selected. Moves to the next question or ends the survey if all questions have been answered. */
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
       
@@ -124,6 +130,7 @@ class QuestionViewController: UITableViewController {
             localAnswers.append(answer)
             
             currentQuestionIndex = currentQuestionIndex + 1
+            // upload answers onto server if all questions have been answered
             if currentQuestionIndex >= allQuestions.count {
                 uploadAnswers(answers: localAnswers)
             } else {
