@@ -11,26 +11,32 @@ struct Question {
     var answers: [String]
 }
 
-let question1 = Question(text: "On the scale of 1-5, how fast was the pace of this workshop?", answers: [
+let answers1 = [
     "1 - too slow",
     "2 - slow",
     "3 - just right",
     "4 - fast",
     "5 -  too fast"
-])
+]
+let question1 = Question(text: "On the scale of 1-5, how fast was the pace of this workshop?",
+                         answers: answers1)
 
-let question2 = Question(text: "On a scale of 1-5, how likely are you to implement a survey app like this on your own?", answers: [
+let answers2 = [
     "1 - very unlikely",
     "2 - unlikely",
     "3 - maybe",
     "4 - likely",
     "5 - very likely"
+]
+let question2 = Question(text: "On a scale of 1-5, how likely are you to implement a survey app like this on your own?",
+                         answers:answers2)
 
-])
-let question3 = Question(text: "Would you recommend this workshop to others?", answers: [
+let answers3 = [
     "Yes",
     "No"
-])
+]
+let question3 = Question(text: "Would you recommend this workshop to others?",
+                         answers: answers3)
 
 /* Store all questions in array allQuestions*/
 let allQuestions = [question1, question2, question3]
@@ -46,7 +52,11 @@ class QuestionViewController: UITableViewController {
     private func uploadAnswers(answers: [String]) {
         var urlBuilder = URLComponents(string: "https://auspicious-alike-antimatter.glitch.me")
         urlBuilder?.path = "/survey"
+        
+        // create comma separated values based on answers
         let surveyAnswersString = localAnswers.joined(separator: ",")
+        
+        // add answers to end of url
         urlBuilder?.queryItems = [URLQueryItem(name: "answers", value: surveyAnswersString)]
 
         let url = urlBuilder?.url!
@@ -54,17 +64,25 @@ class QuestionViewController: UITableViewController {
         var request = URLRequest(url: url!)
         request.httpMethod = "POST"
         
-        let waitAlert = UIAlertController(title: "Survey completed", message: "Thank you for completing the survey. Your responses are being uploaded :)", preferredStyle: .alert)
+        // show popup alert with a message
+        let waitAlert = UIAlertController(title: "Survey completed",
+                                          message: "Thank you for completing the survey. Your responses are being uploaded :)",
+                                          preferredStyle: .alert)
+        
         self.present(waitAlert, animated: true)
         
+        // start the transmission
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            // this block of code runs when the request is finished
             if let error = error {
                 print(error)
             }
             if let response = response as? HTTPURLResponse {
                 print(response.statusCode)
             }
+            // on the UI thread:
             DispatchQueue.main.async {
+                // dismiss the alert, then dismiss the QuestionViewController (self)
                 waitAlert.dismiss(animated: true) {
                     self?.dismiss(animated: true)
                 }
@@ -72,7 +90,7 @@ class QuestionViewController: UITableViewController {
             }
 
             
-        }.resume()
+        }.resume() // dont forget to call resume() to actually start the request
     }
     
     // tableview functions
@@ -125,15 +143,19 @@ class QuestionViewController: UITableViewController {
         if section == 0 {
             return
         } else {
+            
+            // get the text of the selected answer based on the row number and save it
             let currentQuestion = allQuestions[currentQuestionIndex]
             let answer = currentQuestion.answers[answerIndex]
             localAnswers.append(answer)
             
+            // move to the next question
             currentQuestionIndex = currentQuestionIndex + 1
             // upload answers onto server if all questions have been answered
             if currentQuestionIndex >= allQuestions.count {
                 uploadAnswers(answers: localAnswers)
             } else {
+                // show the new question/answers in the table view
                 tableView.reloadData()
             }
             
