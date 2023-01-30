@@ -53,7 +53,9 @@ class QuestionViewController: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
 
-    /* Uploads the survey answers onto the remote server. */
+    /* Uploads the survey answers onto the remote server.
+     See the server code here: https://glitch.com/edit/#!/auspicious-alike-antimatter
+     */
     private func uploadAnswers(answers: [String]) {
         var urlBuilder = URLComponents(string: "https://auspicious-alike-antimatter.glitch.me")
         urlBuilder?.path = "/survey"
