@@ -35,6 +35,7 @@ class QuestionViewController: UITableViewController {
     
     override func viewDidLoad() {
         self.title = "My Survey"
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
 
     /* Uploads the survey answers onto the remote server. */
