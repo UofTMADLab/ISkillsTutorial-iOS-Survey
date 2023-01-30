@@ -21,25 +21,10 @@ let answers1 = [
 let question1 = Question(text: "On the scale of 1-5, how fast was the pace of this workshop?",
                          answers: answers1)
 
-let answers2 = [
-    "1 - very unlikely",
-    "2 - unlikely",
-    "3 - maybe",
-    "4 - likely",
-    "5 - very likely"
-]
-let question2 = Question(text: "On a scale of 1-5, how likely are you to implement a survey app like this on your own?",
-                         answers:answers2)
-
-let answers3 = [
-    "Yes",
-    "No"
-]
-let question3 = Question(text: "Would you recommend this workshop to others?",
-                         answers: answers3)
+// add more questions
 
 /* Store all questions in array allQuestions*/
-let allQuestions = [question1, question2, question3]
+let allQuestions = [question1]
 
 
 class QuestionViewController: UITableViewController {
@@ -47,6 +32,10 @@ class QuestionViewController: UITableViewController {
 
     var currentQuestionIndex = 0 // keeps track of index of current question
     var localAnswers = [String]() // stores the answers locally before sending to remote database
+    
+    override func viewDidLoad() {
+        self.title = "My Survey"
+    }
 
     /* Uploads the survey answers onto the remote server. */
     private func uploadAnswers(answers: [String]) {
@@ -99,36 +88,28 @@ class QuestionViewController: UITableViewController {
      A required method under UITableViewDataSource protocol.
      */
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        // return the correct number of sections
+        return 0
     }
     
     /* Returns the number of rows or cells in each section. Allows us to specify same or different number of rows for different sections.*/
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1 // one row/cell for the question text
-        } else {
-            let currentQuestion = allQuestions[currentQuestionIndex]
-            return currentQuestion.answers.count // number of rows/cells = number of possible answers for each question
-        }
+        // return the correct number of rows for the given section
+        return 0
 
     }
     
     /* Creates and configure rows. Updates the question text in the first section, and text displayed on the answer cells accordingly. */
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // return the details of how each row should appear
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath ) // retrieves a reusable cell object for the text updates
         let currentQuestion = allQuestions[currentQuestionIndex]
         let section = indexPath.section
         let answerIndex = indexPath.row
-        if section == 0 {
-            cell.textLabel?.text = currentQuestion.text
-            cell.selectionStyle = .none
-        } else {
-            cell.textLabel?.text = currentQuestion.answers[answerIndex]
-            cell.selectionStyle = .default
-        }
-
-        // allow text to span multiple lines
-        cell.textLabel?.numberOfLines = 0
+       
+        
+        
         
         return cell
     }
@@ -140,27 +121,7 @@ class QuestionViewController: UITableViewController {
         let section = indexPath.section
         let answerIndex = indexPath.row
        
-        if section == 0 {
-            return
-        } else {
-            
-            // get the text of the selected answer based on the row number and save it
-            let currentQuestion = allQuestions[currentQuestionIndex]
-            let answer = currentQuestion.answers[answerIndex]
-            localAnswers.append(answer)
-            
-            // move to the next question
-            currentQuestionIndex = currentQuestionIndex + 1
-            // upload answers onto server if all questions have been answered
-            if currentQuestionIndex >= allQuestions.count {
-                uploadAnswers(answers: localAnswers)
-            } else {
-                // show the new question/answers in the table view
-                tableView.reloadData()
-            }
-            
-        }
-        
+      // handle selection of a row
 
         
     }
